@@ -451,7 +451,7 @@
       deliveryTime: '7-10 хоног',
       freeDelivery: true,
       contactPhone: '9999-9999',
-      telegramBotToken: '8005513315:AAGnhscLIUoiWQD7aJ5q0itUbii7IPUm4wY',  // Энд Telegram bot token оруулна
+      telegramBotToken: '7815891915:AAE5Y7GZRtQ9v6CIzLL0StQqmSbpp2j5DXQ',  // Энд Telegram bot token оруулна
       telegramChatId: '1975855506'      // Энд Telegram chat ID оруулна
     };
 
@@ -620,6 +620,28 @@
     });
     async function sendTelegramNotification(orderData) {
   const PROXY_URL = 'https://cors-anywhere.herokuapp.com/'; // CORS proxy
+  const API_URL = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
+
+  try {
+    const response = await fetch(PROXY_URL + API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        chat_id: config.telegramChatId,
+        text: `Шинэ захиалга: ${JSON.stringify(orderData)}`,
+        parse_mode: 'HTML'
+      })
+    });
+    console.log('Илгээсэн хариу:', await response.json());
+  } catch (error) {
+    console.error('Илгээхэд алдаа:', error);
+  }
+}
+async function sendTelegramNotification(orderData) {
+  const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
   const API_URL = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
 
   try {
