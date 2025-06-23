@@ -451,8 +451,8 @@
       deliveryTime: '7-10 хоног',
       freeDelivery: true,
       contactPhone: '9999-9999',
-      telegramBotToken: '7815891915:AAE5Y7GZRtQ9v6CIzLL0StQqmSbpp2j5DXQ',  // Энд Telegram bot token оруулна
-      telegramChatId: '1975855506'      // Энд Telegram chat ID оруулна
+      telegramBotToken: '7815891915:AAE5Y7GZRtQ9v6CIzLL0StQqmSbpp2j5DXQ',
+      telegramChatId: '1975855506'
     };
 
     // DOM Elements
@@ -466,21 +466,23 @@
     const successMessage = document.getElementById('successMessage');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Telegram мэдэгдэл илгээх функц
+    // Telegram мэдэгдэл илгээх функц (шинэчлэгдсэн)
     async function sendTelegramNotification(orderData) {
-      const message = `🛒 <b>Шинэ захиалга ирлээ!</b>\n\n` +
+      const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+      const API_URL = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
+      
+      const message = `🛒 <b>ШИНЭ ЗАХИАЛГА</b> 🛒\n\n` +
                      `👤 <b>Нэр:</b> ${orderData.name}\n` +
                      `📞 <b>Утас:</b> ${orderData.phone}\n` +
                      `🏠 <b>Хаяг:</b> ${orderData.address}\n` +
                      `🔢 <b>Тоо ширхэг:</b> ${orderData.quantity}\n` +
                      `💰 <b>Нийт дүн:</b> ${orderData.totalAmount}\n` +
-                     `🏦 <b>Банкны мэдээлэл:</b> ${orderData.bankDetails}\n` +
-                     `🛒 <b>Гүйлгээний код:</b> ${orderData.transactionCode}\n` +
-                     `🚚 <b>Хүргэлт:</b> ${orderData.deliveryInfo}\n\n` +
+                     `🏦 <b>Банк:</b> ${orderData.bankDetails}\n` +
+                     `🛒 <b>Захиалгын код:</b> ${orderData.transactionCode}\n\n` +
                      `⏱ <i>${new Date().toLocaleString()}</i>`;
 
       try {
-        const response = await fetch(`https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`, {
+        const response = await fetch(`${PROXY_URL}${encodeURIComponent(API_URL)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -495,9 +497,12 @@
         const result = await response.json();
         if (!result.ok) {
           console.error('Telegram алдаа:', result);
+          return false;
         }
+        return true;
       } catch (error) {
-        console.error('Telegram мэдэгдэл илгээхэд алдаа гарлаа:', error);
+        console.error('Илгээхэд алдаа:', error);
+        return false;
       }
     }
 
@@ -564,18 +569,18 @@
 
       try {
         // Telegram мэдэгдэл илгээх
-        await sendTelegramNotification(formData);
+        const telegramSuccess = await sendTelegramNotification(formData);
         
-        // Show success message
-        form.style.display = 'none';
-        successMessage.style.display = 'block';
-        
-        // Консолд харахаар илгээсэн мэдээллийг хэвлэх
-        console.log('Илгээсэн мэдээлэл:', formData);
-        
+        if (telegramSuccess) {
+          form.style.display = 'none';
+          successMessage.style.display = 'block';
+          console.log('Амжилттай илгээгдлээ:', formData);
+        } else {
+          alert('Мэдэгдэл илгээхэд алдаа гарлаа. Та утасны дугаараар холбогдоно уу.');
+        }
       } catch (error) {
         console.error('Алдаа:', error);
-        alert('Алдаа гарлаа. Дахин оролдоно уу эсвэл бидэнтэй шууд холбогдоно уу.');
+        alert('Алдаа гарлаа. Дахин оролдоно уу.');
       } finally {
         loading.style.display = 'none';
         submitBtn.disabled = false;
@@ -618,50 +623,6 @@
         });
       });
     });
-    async function sendTelegramNotification(orderData) {
-  const PROXY_URL = 'https://cors-anywhere.herokuapp.com/'; // CORS proxy
-  const API_URL = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
-
-  try {
-    const response = await fetch(PROXY_URL + API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify({
-        chat_id: config.telegramChatId,
-        text: `Шинэ захиалга: ${JSON.stringify(orderData)}`,
-        parse_mode: 'HTML'
-      })
-    });
-    console.log('Илгээсэн хариу:', await response.json());
-  } catch (error) {
-    console.error('Илгээхэд алдаа:', error);
-  }
-}
-async function sendTelegramNotification(orderData) {
-  const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
-  const API_URL = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
-
-  try {
-    const response = await fetch(PROXY_URL + API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify({
-        chat_id: config.telegramChatId,
-        text: `Шинэ захиалга: ${JSON.stringify(orderData)}`,
-        parse_mode: 'HTML'
-      })
-    });
-    console.log('Илгээсэн хариу:', await response.json());
-  } catch (error) {
-    console.error('Илгээхэд алдаа:', error);
-  }
-}
   </script>
 </body>
 </html>
