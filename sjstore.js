@@ -1,12 +1,12 @@
 // Тохиргоо
 const config = {
-  price: 85000,
+  price: 20000,
   bankName: 'Голомт Банк',
   bankAccount: '2405165138',
   recipient: 'Цэлмүүн Амгалан',
   deliveryTime: '7-10 хоног',
   freeDelivery: true,
-  contactPhone: '9999-9999',
+  contactPhone: '89972850',
   telegramBotToken: '7815891915:AAE5Y7GZRtQ9v6CIzLL0StQqmSbpp2j5DXQ',
   telegramChatId: '1975855506'
 };
